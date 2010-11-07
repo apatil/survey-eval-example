@@ -32,18 +32,7 @@ def survey_likelihood(sp_sub, survey_plan, data, i, a1, a2):
     data_ = np.ones_like(sp_sub)*data[i]
     return pm.binomial_like(data_, survey_plan.n[i], pm.stukel_invlogit(sp_sub, a1, a2))
 
-def itn_val(data):
-    obs = data.pos
-    n = data.pos + data.neg
-    def f(sp_sub, a1, a2):
-        return pm.stukel_invlogit(sp_sub,a1,a2)
-    return obs, n, f
-
-validate_postproc = [itn_val]
-
 def mcmc_init(M):
-    # M.use_step_method(pm.gp.GPEvaluationGibbs, M.sp_sub, M.V, M.eps_p_f, ti=M.ti)
-    M.use_step_method(pm.gp.GPParentAdaptiveMetropolis, [M.amp, M.scale, M.diff_degree, M.V], scales={M.amp: .001, M.scale: .001, M.diff_degree: .001, M.V: .001})
-    # M.use_step_method(pm.AdaptiveMetropolis, [M.a1, M.a2, M.V], scales={M.a1: .001, M.a2: .001, M.V: .001})
-
-metadata_keys = ['ti','fi','ui']
+    M.use_step_method(pm.gp.GPParentAdaptiveMetropolis, [M.amp, M.scale, M.diff_degree, M.m, M.V])
+                    
+metadata_keys = ['fi','ti','ui']
