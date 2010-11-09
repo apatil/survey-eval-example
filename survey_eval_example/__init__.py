@@ -33,6 +33,6 @@ def survey_likelihood(sp_sub, survey_plan, data, i, a1, a2):
     return pm.binomial_like(data_, survey_plan.n[i], pm.stukel_invlogit(sp_sub, a1, a2))
 
 def mcmc_init(M):
-    M.use_step_method(pm.gp.GPParentAdaptiveMetropolis, [M.amp, M.scale, M.diff_degree, M.m, M.V])
+    M.use_step_method(pm.gp.GPParentAdaptiveMetropolis, [M.amp, M.scale, M.diff_degree, M.m])
                     
 metadata_keys = ['fi','ti','ui']
