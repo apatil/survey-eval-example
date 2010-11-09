@@ -38,8 +38,8 @@ def make_model(lon,lat,input_data,covariate_keys,pos,neg,cpus=1):
     diff_degree = pm.Uniform('diff_degree', .01, 3)
 
     # The nugget variance.
-    V = pm.Exponential('V', .1, value=.1)
-    tau = 1./(V+.1)
+    V = pm.Gamma('V', 4, 40, value=.1)
+    tau = 1./V
     
     # Create the covariance & its evaluation at the data locations.
     @pm.deterministic(trace=True)
