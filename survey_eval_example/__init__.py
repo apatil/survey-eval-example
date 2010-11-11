@@ -16,21 +16,21 @@ def check_data(input):
     if np.any(input.pos<0) or np.any(input.neg<0):
         raise ValueError, 'Some negative values in pos and neg'
 
-def itn_map(sp_sub, a1, a2):
+def example_map(sp_sub):
     itn = sp_sub.copy('F')
-    itn = stukel_invlogit(itn,a1,a2)
+    itn = invlogit(itn)
     return itn
     
-map_postproc = [itn_map]
+map_postproc = [example_map]
 
-def simdata_postproc(sp_sub, survey_plan, a1, a2):
-    p = pm.stukel_invlogit(sp_sub, a1, a2)
+def simdata_postproc(sp_sub, survey_plan):
+    p = pm.invlogit(sp_sub)
     n = survey_plan.n
     return pm.rbinomial(n, p)
     
-def survey_likelihood(sp_sub, survey_plan, data, i, a1, a2):
+def survey_likelihood(sp_sub, survey_plan, data, i):
     data_ = np.ones_like(sp_sub)*data[i]
-    return pm.binomial_like(data_, survey_plan.n[i], stukel_invlogit(sp_sub, a1, a2))
+    return pm.binomial_like(data_, survey_plan.n[i], invlogit(sp_sub))
 
 def areal_diff(gc): 
     "Difference in areal mean between some areas" 
@@ -39,7 +39,7 @@ def areal_diff(gc):
         "The V is in there just to test"
         return Ghana - Togo
 
-    g = dict([(k, lambda sp_sub, x, a1, a2, a=v['geom'].area: stukel_invlogit(sp_sub(x),a1,a2)*a) for k,v in gc.iteritems()])
+    g = dict([(k, lambda sp_sub, x, a=v['geom'].area: invlogit(sp_sub(x))*a) for k,v in gc.iteritems()])
 
     return h, g
 
