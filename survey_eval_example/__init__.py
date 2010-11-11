@@ -1,6 +1,6 @@
 # from mcmc import *
 from model import *
-from generic_mbg import stukel_invlogit
+from generic_mbg import stukel_invlogit, invlogit
 import pymc as pm
 import numpy as np
 
@@ -30,7 +30,20 @@ def simdata_postproc(sp_sub, survey_plan, a1, a2):
     
 def survey_likelihood(sp_sub, survey_plan, data, i, a1, a2):
     data_ = np.ones_like(sp_sub)*data[i]
-    return pm.binomial_like(data_, survey_plan.n[i], pm.stukel_invlogit(sp_sub, a1, a2))
+    return pm.binomial_like(data_, survey_plan.n[i], stukel_invlogit(sp_sub, a1, a2))
+
+def areal_diff(gc): 
+    "Difference in areal mean between some areas" 
+
+    def h(Ghana, Togo, V):
+        "The V is in there just to test"
+        return Ghana - Togo
+
+    g = dict([(k, lambda sp_sub, x, a1, a2, a=v['geom'].area: stukel_invlogit(sp_sub(x),a1,a2)*a) for k,v in gc.iteritems()])
+
+    return h, g
+
+areal_postproc = [areal_diff]
 
 def mcmc_init(M):
     M.use_step_method(pm.gp.GPParentAdaptiveMetropolis, [M.amp, M.scale, M.diff_degree, M.m])

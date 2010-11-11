@@ -41,6 +41,9 @@ def make_model(lon,lat,input_data,covariate_keys,pos,neg,cpus=1):
     V = pm.Gamma('V',4,40,value=.1)
     tau = 1./V
     
+    a1 = pm.Uninformative('a1',0)
+    a2 = pm.Uninformative('a2',0)
+    
     # Create the covariance & its evaluation at the data locations.
     @pm.deterministic(trace=True)
     def C(amp=amp, scale=scale, diff_degree=diff_degree):
@@ -54,7 +57,7 @@ def make_model(lon,lat,input_data,covariate_keys,pos,neg,cpus=1):
     eps_p_f = pm.Normal('eps_p_f', sp_sub.f_eval[fi], tau, value=pm.logit((pos+1.)/(pos+neg+2.)))
 
     # Probability of 'success'
-    p = pm.Lambda('s',lambda lt=eps_p_f: invlogit(lt), trace=False)
+    p = pm.Lambda('s',lambda lt=eps_p_f, a1=a1, a2=a2: stukel_invlogit(lt,a1,a2), trace=False)
     
     # The data have the 'observed' flag set to True.
     d = pm.Binomial('d', pos+neg, p, value=pos, observed=True)
