@@ -3,6 +3,7 @@ from model import *
 from generic_mbg import stukel_invlogit, invlogit
 import pymc as pm
 import numpy as np
+import flikelihood
 
 nugget_labels = {'sp_sub': 'V'}
 obs_labels = {'sp_sub': 'eps_p_f'}
@@ -29,8 +30,7 @@ def simdata_postproc(sp_sub, survey_plan):
     return pm.rbinomial(n, p)
     
 def survey_likelihood(sp_sub, survey_plan, data, i):
-    data_ = np.ones_like(sp_sub)*data[i]
-    return pm.binomial_like(data_, survey_plan.n[i], invlogit(sp_sub))
+    return flikelihood.binomial(data[i], survey_plan.n[i], sp_sub)
 
 def areal_diff(gc): 
     "Difference in areal mean between some areas" 
