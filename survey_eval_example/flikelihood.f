@@ -1,5 +1,8 @@
-! pm.binomial_like(data_, survey_plan.n[i], invlogit(sp_sub))
-
+! This Fortran implementation of the likelihood function, up to
+! a normalizing constant, is much faster than its Python equivalent
+! would be. Since the likelihood function is evaluated an enormous
+! number of times over the course of the computations, it is worth
+! optimizing heavily.
       SUBROUTINE binomial(d, n, f, nf, lp)
 cf2py intent(hide) nf
 cf2py intent(out) lp
